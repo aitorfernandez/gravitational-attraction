@@ -1,32 +1,23 @@
 export default (p) => {
-  const circles = []
-
   const margin = 48
 
-  function createCircle() {
-    const mass = 2
-    const radius = mass * 4
+  const bodies = []
 
-    const pos = p.createVector(p.random(p.width), p.random(p.height))
+  function createBody() {
+    const radius = p.random(5, 15)
+    const distance = p.random(75, 200)
+    const speed = p.random(0.1, 0.15)
 
-    const acceleration = p.createVector(0, 0)
-    const velocity = p.createVector(0, 0)
-    const position = p.createVector(0, 0)
-
-    function applyForce(force) {
-      const f = p5.Vector.div(force, mass)
-      acceleration.add(f)
-    }
+    let angle = p.random(p.TWO_PI)
 
     function update() {
-      velocity.add(acceleration)
-      position.add(velocity)
-      acceleration.mult(0)
+      angle += speed
     }
 
     function draw() {
-      p.fill('white')
-      p.circle(pos.x, pos.y, radius)
+      p.rotate(angle)
+      p.translate(distance, 0)
+      p.ellipse(0, 0, radius * 2, radius * 2)
     }
 
     return {
@@ -36,24 +27,33 @@ export default (p) => {
   }
 
   function reset() {
-    circles.length = 0
+    bodies.length = 0
 
-    for (let i = 0; i < 100; i +=1) {
-      circles.push(createCircle())
+    for (let i = 0; i < 2; i += 1) {
+      bodies.push(createBody())
     }
   }
 
   function setup() {
     p.createCanvas(p.windowWidth - margin, p.windowHeight - margin)
+    p.frameRate(24)
     reset()
   }
 
   function draw() {
     p.background('#111')
 
-    circles.forEach((circle) => {
-      circle.update()
-      circle.draw()
+    p.fill(255, 100)
+
+    p.translate(p.width / 2, p.height / 2)
+
+    p.ellipse(0, 0, 100, 100)
+
+    bodies.forEach((body) => {
+      p.push()
+      body.update()
+      body.draw()
+      p.pop()
     })
   }
 
