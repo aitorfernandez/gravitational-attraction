@@ -12,17 +12,21 @@ export default (p) => {
     let scale = 0.0
     let angle = p.random(p.TWO_PI)
 
+    const direction = p.random() < 0.5
+    const s = p.random() < 0.5
+
     function update() {
       angle += speed
       scale = p.cos(angle) * 0.5
     }
 
     function draw() {
-      p.rotate(angle)
-      // p.translate(distance + (p.cos(angle) * amplitude), 0)
-      p.translate(distance, 0)
+      p.rotate(direction ? angle : angle * -1)
+      p.translate(distance + (p.cos(angle) * amplitude), 0)
       p.scale(scale)
-      p.ellipse(0, 0, radius * 2, radius * 2)
+
+      p.triangle(0 - 50 + scale, 0, 50, 0 - 50 + scale, 50 + scale, 0)
+      // p.ellipse(0, 0, radius * 2, radius * 2)
     }
 
     return {
@@ -34,7 +38,7 @@ export default (p) => {
   function reset() {
     bodies.length = 0
 
-    for (let i = 0; i < 2; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
       bodies.push(createBody())
     }
   }
