@@ -182,7 +182,7 @@ export default (p) => {
   }
 
   function draw() {
-    p.background('#111')
+    p.background('white')
 
     p.noStroke()
 
