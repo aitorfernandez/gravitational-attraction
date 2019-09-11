@@ -1,5 +1,6 @@
 export default (p) => {
   const margin = 48
+  const triangles = []
 
   function createTriangle() {
     const initialVertex = p.round(p.random(60, 80))
@@ -74,9 +75,12 @@ export default (p) => {
   }
 
   function reset() {
-  }
+    triangles.length = 0
 
-  const triangle = createTriangle()
+    for (let i = 0, len = 12; i < len; i += 1) {
+      triangles.push(createTriangle())
+    }
+  }
 
   function setup() {
     p.createCanvas(p.windowWidth - margin, p.windowHeight - margin)
@@ -97,8 +101,11 @@ export default (p) => {
     p.translate(p.width / 2, p.height / 2)
 
     p.ellipse(0, 0, 100, 100)
-    triangle.update()
-    triangle.draw()
+
+    triangles.forEach((triangle) => {
+      triangle.update()
+      triangle.draw()
+    })
     p.pop()
   }
 
