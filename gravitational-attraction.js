@@ -1,5 +1,7 @@
 export default (p) => {
   const margin = 48
+
+  const totalTriangles = 12
   const triangles = []
 
   const red = [
@@ -29,7 +31,7 @@ export default (p) => {
   let hue
 
   function createTriangle() {
-    const color = p.random(hue)
+    const color = p.color(p.random(hue))
 
     const initialVertex = p.round(p.random(60, 80))
     const vertex = {
@@ -45,6 +47,8 @@ export default (p) => {
     let angle = p.random(p.TWO_PI)
     let scale = 0.0
 
+    let lifespan = p.random(150, 255)
+
     const amplitude = p.round(p.random(20, 80))
     const vel = p.random(0.02, 0.06)
 
@@ -55,9 +59,15 @@ export default (p) => {
       return `v${p.round(p.random(2)) + 1}`
     }
 
+    function isDead() {
+      return lifespan < 0
+    }
+
     function update() {
       angle += vel
       scale = p.cos(angle) * 0.5
+
+      lifespan -= p.random(0, 2)
 
       if (p.frameCount % module === 0) {
         activeVertex = rndVertex()
@@ -79,6 +89,7 @@ export default (p) => {
     }
 
     function draw() {
+      color.setAlpha(lifespan)
       p.fill(color)
 
       p.push()
@@ -99,8 +110,15 @@ export default (p) => {
     }
 
     return {
+      isDead,
       update,
       draw
+    }
+  }
+
+  function addTriangles(n) {
+    for (let i = 0; i < n; i += 1) {
+      triangles.push(createTriangle())
     }
   }
 
@@ -108,10 +126,7 @@ export default (p) => {
     hue = p.random(colors)
 
     triangles.length = 0
-
-    for (let i = 0, len = 12; i < len; i += 1) {
-      triangles.push(createTriangle())
-    }
+    addTriangles(totalTriangles)
   }
 
   function setup() {
@@ -138,6 +153,17 @@ export default (p) => {
       triangle.draw()
     })
     p.pop()
+
+    let i = triangles.length
+    while (i -= 1) {
+      if (triangles[i].isDead()) {
+        triangles.splice(i, 1)
+      }
+    }
+
+    if (triangles.length < totalTriangles / 2) {
+      addTriangles(p.round(p.random(6, totalTriangles)))
+    }
   }
 
   p.play = function() {
