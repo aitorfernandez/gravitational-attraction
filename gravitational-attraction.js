@@ -133,7 +133,7 @@ export default (p) => {
 
     function update() {
       angle += 0.02
-      scale = p.sin(angle) - 2
+      scale = p.sin(angle) - 1.5
     }
 
     function draw() {
