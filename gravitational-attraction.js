@@ -8,7 +8,7 @@ export default (p) => {
     }
 
     const module = p.round(p.random(5, 12))
-    let activeVertex = 'v1' // rndVertex()
+    let activeVertex = rndVertex()
 
     const dir = p.random() < 0.5
     let up = p.random() < 0.5
