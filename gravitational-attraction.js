@@ -28,12 +28,12 @@ export default (p) => {
     red, orange, blue, purple, monochrome
   ]
 
-  let hue
+  let hue, ellipse
 
   function createTriangle() {
     const color = p.color(p.random(hue))
 
-    const initialVertex = p.round(p.random(60, 80))
+    const initialVertex = p.round(p.random(100, 140))
     const vertex = {
       v1: initialVertex, v2: initialVertex, v3: initialVertex
     }
@@ -47,12 +47,13 @@ export default (p) => {
     let angle = p.random(p.TWO_PI)
     let scale = 0.0
 
-    let lifespan = p.random(150, 255)
+    let lifespan = 1
+    let old = false
 
     const amplitude = p.round(p.random(20, 80))
     const vel = p.random(0.02, 0.06)
 
-    const distance = p.random(75, 150)
+    const distance = p.random(initialVertex, initialVertex * 2)
     const padding = 12
 
     function rndVertex() {
@@ -66,8 +67,6 @@ export default (p) => {
     function update() {
       angle += vel
       scale = p.cos(angle) * 0.5
-
-      lifespan -= p.random(0, 2)
 
       if (p.frameCount % module === 0) {
         activeVertex = rndVertex()
@@ -86,15 +85,25 @@ export default (p) => {
       } else {
         vertex[activeVertex] -= motion
       }
+
+      if (old) {
+        lifespan -= p.random(0, 4)
+      } else {
+        lifespan += p.random(1, 3)
+      }
+
+      if (lifespan > 255) {
+        old = true
+      }
     }
 
-    function draw() {
+    function draw(d) {
       color.setAlpha(lifespan)
       p.fill(color)
 
       p.push()
       p.rotate(dir ? angle : angle * -1)
-      p.translate(distance, 0)
+      p.translate(distance * d, 0)
 
       p.push()
       p.rotate(angle)
@@ -116,6 +125,38 @@ export default (p) => {
     }
   }
 
+  function createEllipse() {
+    const color = p.color(p.random(hue))
+
+    let angle = 0
+    let scale = 0
+
+    function update() {
+      angle += 0.02
+      scale = p.sin(angle) - 2
+    }
+
+    function draw() {
+      color.setAlpha(105)
+      p.fill(color)
+
+      p.push()
+      p.scale(scale)
+      p.ellipse(0, 0, 24, 24)
+      p.pop()
+    }
+
+    function getScale() {
+      return scale
+    }
+
+    return {
+      getScale,
+      update,
+      draw
+    }
+  }
+
   function addTriangles(n) {
     for (let i = 0; i < n; i += 1) {
       triangles.push(createTriangle())
@@ -127,6 +168,8 @@ export default (p) => {
 
     triangles.length = 0
     addTriangles(totalTriangles)
+
+    ellipse = createEllipse()
   }
 
   function setup() {
@@ -146,11 +189,12 @@ export default (p) => {
     p.push()
     p.translate(p.width / 2, p.height / 2)
 
-    p.ellipse(0, 0, 100, 100)
+    ellipse.update()
+    ellipse.draw()
 
     triangles.forEach((triangle) => {
       triangle.update()
-      triangle.draw()
+      triangle.draw(ellipse.getScale())
     })
     p.pop()
 
